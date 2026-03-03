@@ -119,20 +119,73 @@ export const Render: React.FC = observer(() => {
         <>
           <div className={styles.settings}>
             <div>
-              Resolution: {width}px x {height}px
+              <span>Resolution: </span>
+              <div>
+                <input
+                  type="number"
+                  value={width}
+                  min={2}
+                  step={2}
+                  onChange={e => {
+                    const newWidth = parseInt(e.target.value, 10);
+                    if (!isNaN(newWidth) && newWidth > 0) {
+                      const baseWidth = area ? area[2] : video.videoWidth;
+                      const newScale = Math.max(0.1, Math.min(1, newWidth / baseWidth));
+                      runInAction(() => {
+                        mainStore.transform.scale = newScale;
+                      });
+                    }
+                  }}
+                />
+                <span>x</span>
+                <input
+                  type="number"
+                  value={height}
+                  min={2}
+                  step={2}
+                  onChange={e => {
+                    const newHeight = parseInt(e.target.value, 10);
+                    if (!isNaN(newHeight) && newHeight > 0) {
+                      const baseHeight = area ? area[3] : video.videoHeight;
+                      const newScale = Math.max(0.1, Math.min(1, newHeight / baseHeight));
+                      runInAction(() => {
+                        mainStore.transform.scale = newScale;
+                      });
+                    }
+                  }}
+                />
+                <span>px</span>
+              </div>
             </div>
             <div>
-              Scale: {Math.round(scale * 100) / 100}
-              <Slider
+              <span>Scale: </span>
+              <input
+                type="number"
+                value={Math.round(scale * 100) / 100}
                 min={0.1}
                 max={1}
-                value={scale}
-                onChange={value => {
-                  runInAction(() => {
-                    mainStore.transform.scale = value;
-                  });
+                step={0.01}
+                onChange={e => {
+                  const newScale = parseFloat(e.target.value);
+                  if (!isNaN(newScale) && newScale >= 0.1 && newScale <= 1) {
+                    runInAction(() => {
+                      mainStore.transform.scale = newScale;
+                    });
+                  }
                 }}
               />
+              <div className={styles.sliderContainer}>
+                <Slider
+                  min={0.1}
+                  max={1}
+                  value={scale}
+                  onChange={value => {
+                    runInAction(() => {
+                      mainStore.transform.scale = value;
+                    });
+                  }}
+                />
+              </div>
             </div>
           </div>
           <div className={styles.actions}>
